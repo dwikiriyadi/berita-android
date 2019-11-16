@@ -3,7 +3,6 @@ package id.dwikiriyadi.berita
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Debug
 import android.widget.FrameLayout
 import id.dwikiriyadi.berita.ui.BeritaFragment
 import id.dwikiriyadi.berita.ui.MainFragment

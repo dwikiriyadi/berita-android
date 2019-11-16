@@ -1,25 +1,26 @@
 package id.dwikiriyadi.berita
 
-
 import android.os.Debug
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import androidx.test.espresso.*
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.jakewharton.espresso.OkHttp3IdlingResource
 import id.dwikiriyadi.berita.common.PerfTestUtils
+import id.dwikiriyadi.berita.data.OkHttpProvider
+import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.Description
 import org.hamcrest.Matcher
-import org.hamcrest.Matchers.allOf
 import org.hamcrest.TypeSafeMatcher
-import org.junit.After
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
+import org.junit.*
 import org.junit.runner.RunWith
 import java.io.BufferedReader
 import java.io.FileWriter
@@ -95,35 +96,77 @@ class MainActivityTest {
     var mActivityTestRule = ActivityTestRule(MainActivity::class.java)
 
     @Before
-    fun setupPerfTest() {
+    fun setup() {
         Debug.startMethodTracing("method-tracing-${PerfTestUtils.logDate()}")
         netStatsDumpStart()
     }
 
     @After
-    fun finishedPerfTest() {
+    fun finish() {
         Debug.stopMethodTracing()
         netStatsDumpFinish()
     }
 
     @Test
-    fun splashScreenTest() {
-        Thread.sleep(3000)
-    }
+    fun mainActivityTest() {
+        val resource : IdlingResource = OkHttp3IdlingResource.create("okhttp", OkHttpProvider.okHttpInstance)
+        IdlingRegistry.getInstance().register(resource)
 
-//    @Test
-//    fun mainFragmentTest() {
-//
-//    }
-//
-//    @Test
-//    fun beritaFragmentTest() {
-//
-//    }
+        // SplashScreen Test
+        Thread.sleep(3000)
+
+        // RecyclerView Test
+        onView(allOf<View>(withId(R.id.recycler_view), isDisplayed())).check(checkRecyclerViewItemCount(10))
+
+        // SwipeRefresh Test
+        onView(allOf<View>(withId(R.id.recycler_view), isDisplayed())).perform(swipeDown())
+        checkSwipeRefresh()
+        onView(allOf<View>(withId(R.id.recycler_view), isDisplayed())).check(checkRecyclerViewItemCount(10))
+
+
+        // Find News Test
+        onView(allOf<View>(withId(R.id.search_edit), isDisplayed())).perform(replaceText("janji"), closeSoftKeyboard())
+
+        // Navigate to BeritaFragment
+        onView(
+            allOf(
+                withId(R.id.root),
+                childAtPosition(
+                    allOf(
+                        withId(R.id.recycler_view),
+                        childAtPosition(
+                            withId(R.id.swipe_refresh),
+                            0
+                        )
+                    ),
+                    0
+                ),
+                isDisplayed()
+            )
+        ).perform(click())
+
+        // Back to MainFragment
+        onView(
+            allOf(
+                withContentDescription("Navigate up"),
+                childAtPosition(
+                    allOf(
+                        withId(R.id.toolbar),
+                        childAtPosition(
+                            withId(R.id.appbar),
+                            0
+                        )
+                    ),
+                    0
+                ),
+                isDisplayed()
+            )
+        ).perform(click())
+        IdlingRegistry.getInstance().unregister(resource)
+    }
 
 /*    @Test
     fun mainActivityTest() {
-
 
         val appCompatEditText = onView(
             allOf(
@@ -162,27 +205,27 @@ class MainActivityTest {
             )
         )
         cardView.perform(click())
-
-        val appCompatImageButton = onView(
-            allOf(
-                withContentDescription("Navigate up"),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.toolbar),
-                        childAtPosition(
-                            withId(R.id.appbar),
-                            0
-                        )
-                    ),
-                    0
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatImageButton.perform(click())
     }*/
 
-/*    private fun childAtPosition(
+    private fun checkRecyclerViewItemCount(count: Int) = object: ViewAssertion {
+        override fun check(view: View?, noViewFoundException: NoMatchingViewException?) {
+            if (noViewFoundException != null) {
+                throw noViewFoundException
+            }
+
+            val recyclerView = view as RecyclerView
+            assertThat(recyclerView.adapter!!.itemCount, `is`(count))
+        }
+    }
+
+    private fun checkSwipeRefresh() {
+        val swRefresh =
+            mActivityTestRule.activity.findViewById(R.id.swipe_refresh) as SwipeRefreshLayout
+        Assert.assertNotNull(swRefresh)
+        Assert.assertTrue(!swRefresh.isRefreshing)
+    }
+
+    private fun childAtPosition(
         parentMatcher: Matcher<View>, position: Int
     ): Matcher<View> {
 
@@ -198,5 +241,5 @@ class MainActivityTest {
                         && view == parent.getChildAt(position)
             }
         }
-    }*/
+    }
 }

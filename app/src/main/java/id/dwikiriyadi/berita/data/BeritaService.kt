@@ -20,6 +20,7 @@ interface BeritaService {
             return Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create())
                 .baseUrl(URL)
+                .client(OkHttpProvider.okHttpInstance)
                 .build().create(BeritaService::class.java)
         }
     }
