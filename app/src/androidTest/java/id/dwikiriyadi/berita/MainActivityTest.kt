@@ -8,6 +8,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.test.espresso.*
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
+import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
@@ -113,7 +114,7 @@ class MainActivityTest {
         val resource : IdlingResource = OkHttp3IdlingResource.create("okhttp", OkHttpProvider.okHttpInstance)
         IdlingRegistry.getInstance().register(resource)
 
-        // SplashScreen Test
+        // SplashScreenTest
         Thread.sleep(3000)
 
         // RecyclerView Test
@@ -124,89 +125,21 @@ class MainActivityTest {
         checkSwipeRefresh()
         onView(allOf<View>(withId(R.id.recycler_view), isDisplayed())).check(checkRecyclerViewItemCount(10))
 
+        // onScroll Test
+        onView(allOf<View>(withId(R.id.recycler_view), isDisplayed())).perform(swipeUp())
+        onView(allOf<View>(withId(R.id.recycler_view), isDisplayed())).check(checkRecyclerViewItemCount(20))
 
         // Find News Test
         onView(allOf<View>(withId(R.id.search_edit), isDisplayed())).perform(replaceText("janji"), closeSoftKeyboard())
 
         // Navigate to BeritaFragment
-        onView(
-            allOf(
-                withId(R.id.root),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.recycler_view),
-                        childAtPosition(
-                            withId(R.id.swipe_refresh),
-                            0
-                        )
-                    ),
-                    0
-                ),
-                isDisplayed()
-            )
-        ).perform(click())
+        onView(allOf<View>(withId(R.id.recycler_view))).perform(RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(0, click()))
 
         // Back to MainFragment
-        onView(
-            allOf(
-                withContentDescription("Navigate up"),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.toolbar),
-                        childAtPosition(
-                            withId(R.id.appbar),
-                            0
-                        )
-                    ),
-                    0
-                ),
-                isDisplayed()
-            )
-        ).perform(click())
+        onView(allOf(withContentDescription("Navigate up"), isDisplayed())).perform(click())
+
         IdlingRegistry.getInstance().unregister(resource)
     }
-
-/*    @Test
-    fun mainActivityTest() {
-
-        val appCompatEditText = onView(
-            allOf(
-                withId(R.id.search_edit),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.search_bar),
-                        childAtPosition(
-                            withId(R.id.appbar),
-                            1
-                        )
-                    ),
-                    1
-                ),
-                isDisplayed()
-            )
-        )
-        appCompatEditText.perform(replaceText("janji"), closeSoftKeyboard())
-
-        pressBack()
-
-        val cardView = onView(
-            allOf(
-                withId(R.id.root),
-                childAtPosition(
-                    allOf(
-                        withId(R.id.recycler_view),
-                        childAtPosition(
-                            withId(R.id.swipe_refresh),
-                            0
-                        )
-                    ),
-                    0
-                ),
-                isDisplayed()
-            )
-        )
-        cardView.perform(click())
-    }*/
 
     private fun checkRecyclerViewItemCount(count: Int) = object: ViewAssertion {
         override fun check(view: View?, noViewFoundException: NoMatchingViewException?) {
@@ -224,23 +157,5 @@ class MainActivityTest {
             mActivityTestRule.activity.findViewById(R.id.swipe_refresh) as SwipeRefreshLayout
         Assert.assertNotNull(swRefresh)
         Assert.assertTrue(!swRefresh.isRefreshing)
-    }
-
-    private fun childAtPosition(
-        parentMatcher: Matcher<View>, position: Int
-    ): Matcher<View> {
-
-        return object : TypeSafeMatcher<View>() {
-            override fun describeTo(description: Description) {
-                description.appendText("Child at position $position in parent ")
-                parentMatcher.describeTo(description)
-            }
-
-            public override fun matchesSafely(view: View): Boolean {
-                val parent = view.parent
-                return parent is ViewGroup && parentMatcher.matches(parent)
-                        && view == parent.getChildAt(position)
-            }
-        }
     }
 }
