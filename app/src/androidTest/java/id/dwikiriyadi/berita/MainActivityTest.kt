@@ -15,6 +15,7 @@ import androidx.test.rule.ActivityTestRule
 import com.jakewharton.espresso.OkHttp3IdlingResource
 import id.dwikiriyadi.berita.common.PerfTestUtils
 import id.dwikiriyadi.berita.data.OkHttpProvider
+import id.dwikiriyadi.berita.utility.logDate
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.Description
@@ -55,7 +56,7 @@ class MainActivityTest {
             val process = processBuilder.start()
 
             val mLogFileAbsoluteLocation = PerfTestUtils.getTestFile(
-                "netstats${PerfTestUtils.logDate()}.dumpsys.log"
+                "netstats${logDate()}.dumpsys.log"
             )
 
             fileWriter = FileWriter(mLogFileAbsoluteLocation)
@@ -97,7 +98,7 @@ class MainActivityTest {
 
     @Before
     fun setup() {
-        Debug.startMethodTracing("method-tracing-${PerfTestUtils.logDate()}")
+        Debug.startMethodTracing("method-tracing-${logDate()}")
         netStatsDumpStart()
     }
 

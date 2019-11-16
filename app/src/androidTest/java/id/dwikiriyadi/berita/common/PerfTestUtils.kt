@@ -32,8 +32,4 @@ object PerfTestUtils {
         return File(getTestDir(), filename)
     }
 
-    fun logDate(): String {
-        val dateFormat = SimpleDateFormat("dd_MM_yyyy_hh_mm_ss", Locale.getDefault())
-        return dateFormat.format(Date())
-    }
 }

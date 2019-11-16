@@ -7,6 +7,8 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.bumptech.glide.Glide
+import java.text.SimpleDateFormat
+import java.util.*
 import kotlin.math.roundToInt
 
 fun Context.toast(message: String) {
@@ -29,4 +31,9 @@ fun ImageView.setImageFromUrl(imageUrl: String) {
         .load(imageUrl)
         .centerCrop()
         .into(this)
+}
+
+fun logDate(): String {
+    val dateFormat = SimpleDateFormat("dd_MM_yyyy_hh_mm_ss", Locale.getDefault())
+    return dateFormat.format(Date())
 }
