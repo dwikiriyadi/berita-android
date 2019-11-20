@@ -1,6 +1,5 @@
 package id.dwikiriyadi.berita
 
-import android.os.Debug
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -14,7 +13,6 @@ import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
 import com.jakewharton.espresso.OkHttp3IdlingResource
 import id.dwikiriyadi.berita.data.OkHttpProvider
-import id.dwikiriyadi.berita.utility.logDate
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.allOf
 import org.junit.*
@@ -26,16 +24,6 @@ class MainActivityTest {
     @Rule
     @JvmField
     var mActivityTestRule = ActivityTestRule(MainActivity::class.java)
-
-    @Before
-    fun setup() {
-        Debug.startMethodTracing("method-tracing-${logDate()}")
-    }
-
-    @After
-    fun finish() {
-        Debug.stopMethodTracing()
-    }
 
     @Test
     fun mainActivityTest() {
