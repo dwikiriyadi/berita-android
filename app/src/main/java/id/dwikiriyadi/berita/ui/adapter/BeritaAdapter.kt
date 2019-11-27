@@ -2,17 +2,19 @@ package id.dwikiriyadi.berita.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
+import androidx.paging.PagedListAdapter
+import androidx.recyclerview.widget.DiffUtil
 import id.dwikiriyadi.berita.R
 import id.dwikiriyadi.berita.data.model.Data
 
 class BeritaAdapter(val onItemClick: (item: Data) -> Unit) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    PagedListAdapter<Data, BeritaViewHolder>(REPO_COMPARATOR) {
 
-    private var items = ArrayList<Data>()
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BeritaViewHolder {
+        val binding: ViewDataBinding = DataBindingUtil.inflate(
+            LayoutInflater.from(parent.context),
             when (viewType) {
                 0 -> R.layout.item_card_image
                 1 -> R.layout.item_card_right_image
@@ -22,25 +24,13 @@ class BeritaAdapter(val onItemClick: (item: Data) -> Unit) :
             false
         )
 
-        return when (viewType) {
-            0 -> CardImageViewHolder(view)
-            1 -> CardRightImageViewHolder(view)
-            else -> CardTextViewHolder(view)
-        }
+        return BeritaViewHolder(binding)
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-
-        val item = items[position]
-
-        when (holder.itemViewType) {
-            0 -> (holder as CardImageViewHolder).bind(item.data) {
-                onItemClick(item)
-            }
-            1 -> (holder as CardRightImageViewHolder).bind(item.data) {
-                onItemClick(item)
-            }
-            else -> (holder as CardTextViewHolder).bind(item.data) {
+    override fun onBindViewHolder(holder: BeritaViewHolder, position: Int) {
+        val item = getItem(position)
+        if (item != null) {
+            holder.bind(item.data) {
                 onItemClick(item)
             }
         }
@@ -48,16 +38,13 @@ class BeritaAdapter(val onItemClick: (item: Data) -> Unit) :
 
     override fun getItemViewType(position: Int) = position.rem(3)
 
-    override fun getItemCount() = items.size
+    companion object {
+        private val REPO_COMPARATOR = object : DiffUtil.ItemCallback<Data>() {
+            override fun areItemsTheSame(oldItem: Data, newItem: Data) =
+                oldItem.data.title == newItem.data.title
 
-    fun setList(data: ArrayList<Data>) {
-        this.items.clear()
-        this.items = data
-        notifyDataSetChanged()
-    }
-
-    fun addData(data: ArrayList<Data>) {
-        this.items.addAll(data)
-        notifyDataSetChanged()
+            override fun areContentsTheSame(oldItem: Data, newItem: Data) =
+                oldItem.data == newItem.data
+        }
     }
 }

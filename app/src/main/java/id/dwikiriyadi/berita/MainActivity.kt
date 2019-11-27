@@ -1,46 +1,23 @@
 package id.dwikiriyadi.berita
 
-import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.FrameLayout
-import id.dwikiriyadi.berita.ui.BeritaFragment
-import id.dwikiriyadi.berita.ui.MainFragment
-import id.dwikiriyadi.berita.ui.SplashFragment
-import id.dwikiriyadi.berita.utility.setFragment
+import androidx.navigation.Navigation
+import id.dwikiriyadi.berita.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity(),
-    SplashFragment.OnFragmentInteractionListener,
-    MainFragment.OnFragmentInteractionListener,
-    BeritaFragment.OnFragmentInteractionListener {
+class MainActivity : AppCompatActivity() {
+
+    private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
+    private val navController by lazy { Navigation.findNavController(this, R.id.nav_host_fragment)}
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        val fragmentContainer = findViewById<FrameLayout>(R.id.fragment_container)
-
-        if (fragmentContainer != null) {
-            if (savedInstanceState != null) {
-                return
-            }
-
-            supportFragmentManager.setFragment(R.id.fragment_container, SplashFragment())
-        }
+        setContentView(binding.root)
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        supportFragmentManager.popBackStack()
+        navController.navigateUp()
         return true
     }
-
-    override fun onBackPressed() {
-        if (supportFragmentManager.backStackEntryCount > 1) {
-            supportFragmentManager.popBackStack()
-        } else {
-            finish()
-        }
-    }
-
-    override fun onFragmentInteraction(uri: Uri) {}
 }

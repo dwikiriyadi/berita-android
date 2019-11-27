@@ -6,6 +6,31 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.*
 
 import id.dwikiriyadi.berita.data.model.Data
+import retrofit2.Callback
+import retrofit2.Response
+
+fun getData(
+    query: Map<String, String>,
+    onSuccess: (body: List<Data>) -> Unit,
+    onFail: (error: String) -> Unit
+) {
+    BeritaService.create().getData(query).enqueue(object : Callback<ArrayList<Data>> {
+        override fun onFailure(call: Call<ArrayList<Data>>, t: Throwable) {
+            onFail(t.message ?: "Unknown Error")
+        }
+
+        override fun onResponse(
+            call: Call<ArrayList<Data>>,
+            response: Response<ArrayList<Data>>
+        ) {
+            if (response.isSuccessful) {
+                onSuccess(response.body() ?: emptyList())
+            } else {
+                onFail(response.errorBody()?.string() ?: "Unknown Error")
+            }
+        }
+    })
+}
 
 interface BeritaService {
 

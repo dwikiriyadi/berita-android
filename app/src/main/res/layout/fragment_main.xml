@@ -1,70 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.MainFragment">
+    tools:context=".ui.main.MainFragment">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appbar"
+    <data>
+
+        <variable
+            name="viewmodel"
+            type="id.dwikiriyadi.berita.ui.main.MainViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?android:attr/actionBarSize"
-            app:popupTheme="@style/AppTheme.PopupOverlay"
-            app:title="@string/berita" />
-
-        <LinearLayout
-            android:id="@+id/search_bar"
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/white"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:theme="@style/AppTheme.AppBarOverlay"
+            app:layout_constraintTop_toTopOf="parent">
 
-            <ImageView
-                android:id="@+id/search_button"
-                android:layout_width="wrap_content"
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?android:attr/actionBarSize"
+                app:popupTheme="@style/AppTheme.PopupOverlay"
+                app:title="@string/berita" />
+
+            <LinearLayout
+                android:id="@+id/search_bar"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:contentDescription="@string/content_description"
-                android:paddingStart="16dp"
-                android:paddingTop="12dp"
-                android:paddingEnd="6dp"
-                android:paddingBottom="12dp"
-                android:src="@drawable/ic_search_black_24dp" />
+                android:background="@android:color/white"
+                android:gravity="center"
+                android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/search_edit"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="@string/cari_berdasarkan_judul"
-                android:inputType="text"
-                android:layout_marginStart="6dp"
-                android:layout_marginEnd="16dp"
-                android:labelFor="@id/search_bar" />
+                <ImageView
+                    android:id="@+id/search_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/content_description"
+                    android:paddingStart="16dp"
+                    android:paddingTop="12dp"
+                    android:paddingEnd="6dp"
+                    android:paddingBottom="12dp"
+                    android:src="@drawable/ic_search_black_24dp" />
 
-        </LinearLayout>
+                <EditText
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_weight="1"
+                    android:hint="@string/cari_berdasarkan_judul"
+                    android:inputType="text"
+                    android:labelFor="@id/search_bar"
+                    android:text="@={viewmodel.search}" />
 
-    </com.google.android.material.appbar.AppBarLayout>
+            </LinearLayout>
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipe_refresh"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/appbar">
+        </com.google.android.material.appbar.AppBarLayout>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_refresh"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/appbar">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
