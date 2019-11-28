@@ -1,5 +1,6 @@
 package id.dwikiriyadi.berita
 
+import android.os.Debug
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -10,6 +11,7 @@ import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import com.jakewharton.espresso.OkHttp3IdlingResource
 import id.dwikiriyadi.berita.data.OkHttpProvider
@@ -17,6 +19,10 @@ import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.allOf
 import org.junit.*
 import org.junit.runner.RunWith
+import java.io.File
+import java.io.FileWriter
+import java.text.SimpleDateFormat
+import java.util.*
 
 @LargeTest
 @RunWith(AndroidJUnit4::class)
@@ -24,6 +30,46 @@ class MainActivityTest {
     @Rule
     @JvmField
     var mActivityTestRule = ActivityTestRule(MainActivity::class.java)
+
+    @Before
+    fun start() {
+
+    }
+
+    @After
+    fun finish() {
+        val dateFormat = SimpleDateFormat("dd_MM_yyyy_hh_mm_ss", Locale.getDefault())
+        val logDate = dateFormat.format(Date())
+
+        val megaByte = 1024L * 1024L
+        val nativeHeapSize = Debug.getNativeHeapSize()
+        val nativeHeapFreeSize = Debug.getNativeHeapFreeSize()
+        val nativeHeapSizeInMB = Debug.getNativeHeapSize() / megaByte
+        val nativeHeapFreeSizeInMB = Debug.getNativeHeapFreeSize() / megaByte
+        val usedMemoryInByte = nativeHeapSize - nativeHeapFreeSize
+        val usedMemoryInMB = usedMemoryInByte / megaByte
+        val usedMemoryInPercentage = usedMemoryInByte * 100 / nativeHeapSize
+
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val file = File(context.getExternalFilesDir(null), "memory-usage-$logDate.txt")
+        FileWriter(file).apply {
+            append("Native Heap Size : $nativeHeapSize byte")
+            append(System.lineSeparator())
+            append("Native Heap Size (MB) : $nativeHeapSizeInMB megabyte")
+            append(System.lineSeparator())
+            append("Native Heap Free Size : $nativeHeapFreeSize byte")
+            append(System.lineSeparator())
+            append("Native Heap Free Size (MB) : $nativeHeapFreeSizeInMB megabyte")
+            append(System.lineSeparator())
+            append("Used Memory In Bytes : $usedMemoryInByte byte")
+            append(System.lineSeparator())
+            append("Used Memory In MBs : $usedMemoryInMB megabyte")
+            append(System.lineSeparator())
+            append("Used Memory In Percentages : $usedMemoryInPercentage %")
+            flush()
+            close()
+        }
+    }
 
     @Test
     fun mainActivityTest() {
