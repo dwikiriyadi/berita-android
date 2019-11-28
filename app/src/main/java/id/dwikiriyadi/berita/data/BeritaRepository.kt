@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.paging.LivePagedListBuilder
+import androidx.paging.PagedList
 import id.dwikiriyadi.berita.data.model.Berita
 import id.dwikiriyadi.berita.data.model.BeritaResult
 import id.dwikiriyadi.berita.data.model.NetworkState
@@ -14,7 +15,7 @@ class BeritaRepository(private val networkExecutor: Executor) {
     fun getData(query: HashMap<String, String>): Result {
         val dataSourceFactory = beritaDataSourceFactory(query)
 
-        val data = LivePagedListBuilder(dataSourceFactory, 10)
+        val data = LivePagedListBuilder(dataSourceFactory, 5)
             .setFetchExecutor(networkExecutor).build()
 
         val error: LiveData<String> =
